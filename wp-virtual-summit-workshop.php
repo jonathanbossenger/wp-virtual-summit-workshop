@@ -21,6 +21,11 @@ add_shortcode( 'wpvs_subscribers_shortcode', 'wpvs_subscribers_shortcode' );
 function wpvs_subscribers_shortcode() {
 	ob_start();
 	$subscriber_emails = wpvs_get_mailchimp_subscribers();
+	if ( empty( $subscriber_emails ) ) {
+		$html = ob_get_clean();
+
+		return $html;
+	}
 	?>
 	<h1>Subscriber List</h1>
 	<?php
@@ -80,7 +85,7 @@ function wpvs_get_mailchimp_subscribers() {
 	foreach ( $response_object->members as $member ) {
 		$response[] = $member->email_address;
 	}
-
+	return $response;
 }
 
 add_shortcode( 'wpvs_form_shortcode', 'wpvs_form_shortcode' );
@@ -129,9 +134,8 @@ function wpvs_maybe_process_form() {
 }
 
 function subscribe_email_to_mailchimp_list( $subscribe_data ) {
-
-	$api_key = WCEU_MAILCHIMP_KEY;
-	$list_id = WCEU_MAILCHIMP_LIST_ID;
+	$api_key = WPVS_MAILCHIMP_KEY;
+	$list_id = WPVS_MAILCHIMP_LIST_ID;
 
 	$api_parts = explode( '-', $api_key );
 	$dc        = $api_parts[1];
